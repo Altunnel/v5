@@ -120,7 +120,7 @@ cat > /var/www/html/index.html <<-END
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <kepala>
-<meta http-equiv="REFRESH" content="0;url=https://wa.me/6282131861788">
+<meta http-equiv="REFRESH" content="0;url=https://wa.me/6287792681887">
 </kepala>
 <tubuh>
 <p>Pengalihan URL</p>
@@ -129,25 +129,93 @@ cat > /var/www/html/index.html <<-END
 END
 /etc/init.d/nginx restart
 
-# install badvpn
+# Mengunduh dan mengatur limit.sh
+wget https://raw.githubusercontent.com/altunnel/v4/main/limit/limit.sh -O limit.sh
+chmod +x limit.sh
+./limit.sh
+
+# Mengatur limit-ip
+wget -q -O /usr/bin/limit-ip "https://raw.githubusercontent.com/altunnel/v4/main/limit/limit-ip"
+chmod +x /usr/bin/limit-ip
+cd /usr/bin
+sed -i 's/\r//' limit-ip
 cd
-wget -O /usr/sbin/badvpn "${REPO}ssh/badvpn" >/dev/null 2>&1
-chmod +x /usr/sbin/badvpn > /dev/null 2>&1
-wget -q -O /etc/systemd/system/badvpn1.service "${REPO}ssh/badvpn1.service" >/dev/null 2>&1
-wget -q -O /etc/systemd/system/badvpn2.service "${REPO}ssh/badvpn2.service" >/dev/null 2>&1
-wget -q -O /etc/systemd/system/badvpn3.service "${REPO}ssh/badvpn3.service" >/dev/null 2>&1
-systemctl disable badvpn1 
-systemctl stop badvpn1 
-systemctl enable badvpn1
-systemctl start badvpn1 
-systemctl disable badvpn2 
-systemctl stop badvpn2 
-systemctl enable badvpn2
-systemctl start badvpn2 
-systemctl disable badvpn3 
-systemctl stop badvpn3 
-systemctl enable badvpn3
-systemctl start badvpn3 
+
+# Konfigurasi dan memulai layanan vmip
+cat > /etc/systemd/system/vmip.service << EOF
+[Unit]
+Description=My
+After=network.target
+
+[Service]
+WorkingDirectory=/root
+ExecStart=/usr/bin/limit-ip vmip
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl daemon-reload
+systemctl restart vmip
+systemctl enable vmip
+
+# Konfigurasi dan memulai layanan vlip
+cat > /etc/systemd/system/vlip.service << EOF
+[Unit]
+Description=My
+After=network.target
+
+[Service]
+WorkingDirectory=/root
+ExecStart=/usr/bin/limit-ip vlip
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl daemon-reload
+systemctl restart vlip
+systemctl enable vlip
+
+# Konfigurasi dan memulai layanan trip
+cat > /etc/systemd/system/trip.service << EOF
+[Unit]
+Description=My
+After=network.target
+
+[Service]
+WorkingDirectory=/root
+ExecStart=/usr/bin/limit-ip trip
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl daemon-reload
+systemctl restart trip
+systemctl enable trip
+#SERVICE LIMIT QUOTA
+
+#SERVICE VMESS
+# // Installing UDP Mini
+mkdir -p /usr/local/kyt/
+wget -q -O /usr/local/kyt/udp-mini "https://raw.githubusercontent.com/altunnel/v4/main/limit/udp-mini"
+chmod +x /usr/local/kyt/udp-mini
+wget -q -O /etc/systemd/system/udp-mini-1.service "https://raw.githubusercontent.com/altunnel/v4/main/limit/udp-mini-1.service"
+wget -q -O /etc/systemd/system/udp-mini-2.service "https://raw.githubusercontent.com/altunnel/v4/main/limit/udp-mini-2.service"
+wget -q -O /etc/systemd/system/udp-mini-3.service "https://raw.githubusercontent.com/altunnel/v4/main/limit/udp-mini-3.service"
+systemctl disable udp-mini-1
+systemctl stop udp-mini-1
+systemctl enable udp-mini-1
+systemctl start udp-mini-1
+systemctl disable udp-mini-2
+systemctl stop udp-mini-2
+systemctl enable udp-mini-2
+systemctl start udp-mini-2
+systemctl disable udp-mini-3
+systemctl stop udp-mini-3
+systemctl enable udp-mini-3
+systemctl start udp-mini-3
 
 
 # setting port ssh
@@ -379,6 +447,16 @@ rm ipserver
 
 # download script
 cd
+
+service cron restart
+cat >/home/daily_reboot <<-END
+3
+END
+cat >/etc/cron.d/x_limp <<-END
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+*/10 * * * * root /usr/bin/xraylimit
+END
 
 cat> /etc/cron.d/auto_exp << END
 SHELL=/bin/sh
