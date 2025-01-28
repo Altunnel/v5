@@ -314,7 +314,6 @@ cd
 
 # install fail2ban
 apt -y install fail2ban
-apt -y install dialog
 
 # Instal DDOS Flate
 if [ -d '/usr/local/ddos' ]; then
