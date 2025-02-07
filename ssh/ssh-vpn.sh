@@ -384,7 +384,7 @@ cd
 cat> /etc/cron.d/auto_exp << END
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-0 2 * * * root /usr/local/sbin/xp
+0 0 * * * root /usr/local/sbin/xp
 END
 
 cat >/etc/cron.d/logclean <<-END
@@ -400,7 +400,7 @@ END
 cat >/etc/cron.d/daily_reboot <<-END
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-3 0 * * * root /sbin/reboot
+0 3 * * * root /sbin/reboot
 END
 
 service cron restart
