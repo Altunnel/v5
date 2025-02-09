@@ -9,7 +9,7 @@ WH='\033[1;37m'
 ipsaya=$(wget -qO- ifconfig.me)
 cd
 today=$(date -d "0 days" +"%Y-%m-%d")
-Exp2=$(curl -sS https://raw.githubusercontent.com/kipasu/ip/main/ip | grep $ipsaya | awk '{print $3}')
+Exp2=$(curl -sS https://scriptcjxrq91ay.agung-store.my.id:81/izin/ip | grep $ipsaya | awk '{print $3}')
 d1=$(date -d "$Exp2" +%s)
 d2=$(date -d "$today" +%s)
 certificate=$(( (d1 - d2) / 86400 ))
