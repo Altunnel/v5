@@ -1,0 +1,184 @@
+#!/bin/bash
+export TERM=xterm
+DF='\e[39m'
+Bold='\e[1m'
+yell='\e[33m'
+red='\e[31m'
+green='\e[32m'
+NC='\e[0m'
+
+# Ambil expired time dari argumen pertama
+pup=$1
+if [ -z "$pup" ]; then
+    pup=60  # Default ke 60 menit jika tidak ada input
+fi
+
+# Mengambil data bot Telegram
+CHATID=$(grep -E "^#bot# " "/etc/bot/.bot.db" | cut -d ' ' -f 3)
+KEY=$(grep -E "^#bot# " "/etc/bot/.bot.db" | cut -d ' ' -f 2)
+URL="https://api.telegram.org/bot$KEY/sendMessage"
+
+# Ambil informasi sistem
+IP=$(curl -sS ipv4.icanhazip.com)
+domain=$(cat /etc/xray/domain)
+ISP=$(cat /etc/xray/isp)
+CITY=$(cat /etc/xray/city)
+
+# Set informasi akun SSH
+Login=trial-`</dev/urandom tr -dc a-z0-9 | head -c5`
+Pass=`</dev/urandom tr -dc a-z0-9 | head -c8`
+hari="1"
+iplimit="99"
+
+# Buat folder limit IP
+mkdir -p /etc/klmpk/limit/ssh/ip/
+echo "$iplimit" > /etc/klmpk/limit/ssh/ip/$Login
+
+# Set masa aktif akun SSH
+useradd -e `date -d "$hari days" +"%Y-%m-%d"` -s /bin/false -M $Login
+echo -e "$Pass\n$Pass\n" | passwd $Login &> /dev/null
+
+# Kirim informasi akun ke Telegram
+TEXT="
+<code>   Account Created Successfully
+————————————————————————————————————
+HOST            : </code><code>$domain</code>
+<code>Nameserver      : </code><code>${NS}</code>
+<code>Username        : </code><code>$Login</code>
+<code>Password        : </code><code>$Pass</code>
+<code>PUB Key         : </code><code>${PUB}</code>
+<code>————————————————————————————————————
+Expired         : $pup Minute
+————————————————————————————————————
+OpenSSH         : 80,2222,4444
+Dropbear        : 80,90,69,143
+OpenSSH SSL     : 443
+DropbearSSH SSL : 433
+————————————————————————————————————
+      SSH Websocket Direct
+    Port : 80,7788,2082,8880
+           8181,8282,6602
+      SSH Websocket SSL
+    Port : 443,8443
+————————————————————————————————————
+SlowDNS         : 53,5300
+SSH UDP         : 1-65535
+OHP + SSH       : 9080
+Proxy           : 3128
+UDPGW           : 7100-7600
+OpenVPN TCP     : 80,1194
+OpenVPN SSL     : 443
+OpenVPN UDP     : 25000
+OpenVPN WS      : 7444
+OpenVPN WS SSL  : 7443
+OpenVPN DNS     : 53
+OHP + OVPN      : 9088
+————————————————————————————————————
+Payload SSH CDN Port 80</code>
+
+<code>GET / HTTP/1.1
+Host: [host_port]
+User-Agent: [ua]
+Upgrade: websocket[crlf][crlf]</code>
+<code>————————————————————————————————————
+Payload SSH TLS/WSS Port 443</code>
+
+<code>GET wss://BUG/ HTTP/1.1
+Host: [host]
+User-Agent: [ua]
+Upgrade: Websocket[crlf][crlf]</code>
+<code>————————————————————————————————————
+Payload SSH WS Non TLS Port 7788</code>
+
+<code>GET wss://BUG/worryfree HTTP/1.1
+Host: [host]
+User-Agent: [ua]
+Upgrade: Websocket[crlf][crlf]</code>
+<code>————————————————————————————————————
+Payload OHP + SSH Port 9880</code>
+
+<code>GET https://BUG HTTP/1.1
+Host: [host]
+User-Agent: [ua][crlf][crlf]</code>
+<code>————————————————————————————————————</code>
+"
+
+curl -s -d "chat_id=$CHATID&disable_web_page_preview=1&text=$TEXT&parse_mode=html" $URL >/dev/null
+
+# Tampilkan informasi akun di terminal
+echo ""
+echo -e " \033[5;36m───────────────────────────────────────\033[0m"
+echo -e " \033[0;35m              SSH/Dropbear    "
+echo -e " \033[5;36m───────────────────────────────────────\033[0m"
+echo -e " HOST             : $domain"
+#echo -e " Nameserver       : ${NS}"
+echo -e " Username         : $Login"
+echo -e " Password         : $Pass"
+#echo -e " PUB Key         : ${PUB}"
+#echo -e "Limit Quota      : $Quota GB"
+#echo -e "Limit Ip         : ${iplimit} User"
+#echo -e "Location         : $CITY"
+#echo -e "ISP              : $ISP"
+echo -e " \033[5;36m───────────────────────────────────────\033[0m"
+echo -e " SSH Websocket NoSSL"
+echo -e "  Port : 80,7788,2082,8080"
+echo -e "         8880,2052,2086,2095"
+echo -e " SSH Websocket SSL"
+echo -e "  Port : 443,8443,2053,2083"
+echo -e "         2087,2096"
+echo -e " \033[5;36m───────────────────────────────────────\033[0m"
+echo -e " OpenSSH          : 80,2222,4444"
+echo -e " SSH UDP          : 1-65535"
+echo -e " OHP + SSH        : 9080"
+echo -e " Proxy            : 3128"
+echo -e " BadVPN UDPGW     : 7100-7600"
+echo -e " OpenVPN TCP      : 80,1194"
+echo -e " OpenVPN SSL      : 443"
+echo -e " OpenVPN UDP      : 25000"
+echo -e " OpenVPN DNS      : 53"
+echo -e " OHP + OVPN       : 9088"
+echo -e " \033[5;36m───────────────────────────────────────\033[0m"
+echo -e " Payload SSH CDN Port 80"
+echo -e ""
+echo -e "\033[0;32m GET / HTTP/1.1"
+echo -e "\033[0;32m Host: [host_port]"
+echo -e "\033[0;32m User-Agent: [ua]"
+echo -e "\033[0;32m Upgrade: websocket[crlf][crlf]"
+echo -e " \033[5;36m───────────────────────────────────────\033[0m"
+echo -e " Payload SSH TLS/WSS Port 443"
+echo -e ""
+echo -e "\033[0;32m GET wss://BUG/ HTTP/1.1"
+echo -e "\033[0;32m Host: [host]"
+echo -e "\033[0;32m User-Agent: [ua]"
+echo -e "\033[0;32m Upgrade: [crlf][crlf]"
+echo -e " \033[5;36m───────────────────────────────────────\033[0m"
+echo -e " Payload SSH WS Non TLS Port 7788 "
+echo -e " Path - /whatever "
+echo -e ""
+echo -e "\033[0;32m GET wss://BUG/worryfree HTTP/1.1 "
+echo -e "\033[0;32m Host: [host] "
+echo -e "\033[0;32m User-Agent: [ua] "
+echo -e "\033[0;32m Upgrade: [crlf][crlf] "
+echo -e " \033[5;36m───────────────────────────────────────\033[0m"
+echo -e " Payload Payload OHP + SSH Port 9080 "
+echo -e " Path - /whatever "
+echo -e ""
+echo -e "\033[0;32m GET https://BUG HTTP/1.1 "
+echo -e "\033[0;32m Host: [host] "
+echo -e "\033[0;32m User-Agent: [ua][crlf][crlf] "
+echo -e " \033[5;36m───────────────────────────────────────\033[0m"
+echo -e "\033[0;35m                  OpenVPN "
+echo -e " \033[5;36m───────────────────────────────────────\033[0m"
+echo -e " https://$domain:81/all-ovpn.zip"
+echo -e " \033[5;36m───────────────────────────────────────\033[0m"
+#echo -e "Aktif Selama     : $masaaktif Hari"
+#echo -e "Dibuat Pada      : $tnggl"
+echo -e " \033[93m      Expired    : $pup Minute"
+echo -e " \033[5;36m───────────────────────────────────────\033[0m"
+echo -e ""
+echo -e " \033[5;36m───────────────────────────────────────\033[0m"
+echo -e " \033[0;35m     Terimakasih sudah menggunakan-     "
+echo -e " \033[0;35m        Script Credit by Agung                  "
+echo -e " \033[5;36m───────────────────────────────────────\033[0m"
+echo "userdel -f \"$Login\"" | at now + $pup minutes &> /dev/null
+echo -e ""
