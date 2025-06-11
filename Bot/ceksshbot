@@ -27,8 +27,9 @@ do
     sleep 0.1
 done
 
-aktif=$(cat /root/.system | wc -l)
-echo "───────────────────────────────────────"
-echo "            $aktif User Online"
-echo "───────────────────────────────────────"
-rm -f /root/.system
+echo -e ""
+echo -e "───────────────────────────────────────"
+echo -e "     Terimakasih sudah menggunakan-     "
+echo -e "        Script Credit by Agung                  "
+echo -e "───────────────────────────────────────"
+echo -e ""
