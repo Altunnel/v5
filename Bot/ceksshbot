@@ -1,9 +1,9 @@
 #!/bin/bash
 export TERM=xterm
 touch /root/.system
-echo "─────────────────────────────"
+echo "──────────────────────────"
 echo "            SSH/Dropbear User Login"
-echo "─────────────────────────────"
+echo "──────────────────────────"
 echo "    USERNAME      TOTAL"
 
 mulog=$(cekssh)
@@ -28,8 +28,8 @@ do
 done
 
 echo -e ""
-echo -e "─────────────────────────────"
+echo -e "──────────────────────────"
 echo -e "     Terimakasih sudah menggunakan-"
 echo -e "        Script Credit by Agung"
-echo -e "─────────────────────────────"
+echo -e "──────────────────────────"
 echo -e ""
