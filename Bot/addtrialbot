@@ -31,8 +31,8 @@ hari="1"
 iplimit="99"
 
 # Buat folder limit IP
-mkdir -p /etc/klmpk/limit/ssh/ip/
-echo "$iplimit" > /etc/klmpk/limit/ssh/ip/$Login
+mkdir -p /etc/kyt/limit/ssh/ip/
+echo "$iplimit" > /etc/kyt/limit/ssh/ip/$Login
 
 # Set masa aktif akun SSH
 useradd -e `date -d "$hari days" +"%Y-%m-%d"` -s /bin/false -M $Login
