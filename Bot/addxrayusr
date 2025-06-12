@@ -26,7 +26,7 @@ sed -i '/#vless$/a\#& '"$user $exp"'\
 },{"id": "'""$uuid""'","email": "'""$user""'"' /etc/xray/config.json
 sed -i '/#vlessgrpc$/a\#& '"$user $exp"'\
 },{"id": "'""$uuid""'","email": "'""$user""'"' /etc/xray/config.json
-sytstemctl restart xray
+systemctl restart xray
 }
 
 # Fungsi untuk menambahkan pengguna Trojan
