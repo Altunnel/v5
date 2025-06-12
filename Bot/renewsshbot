@@ -1,33 +1,28 @@
 #!/bin/bash
 
-# Ambil input username dan hari
-read -r username
-read -r hari
-# Cek apakah user ada
-if ! id "$username" &>/dev/null; then
-  echo "❌  Username tidak ditemukan!"
-  exit 1
+# Periksa apakah argumen lengkap
+if [[ $# -ne 2 ]]; then
+    echo "❌ Penggunaan: renewsshbot <username> <jumlah_hari>"
+    exit 1
 fi
-# Ambil tanggal expired saat ini
-current_exp=$(chage -l "$username" | grep "Account expires" | cut -d: -f2 | sed 's/^[ \t]*//')
-# Ubah expired jadi format epoch
-if [[ "$current_exp" == "never" || -z "$current_exp" ]]; then
-  current_epoch=$(date +%s)
-else
-  current_epoch=$(date -d "$current_exp" +%s)
-  now_epoch=$(date +%s)
-  if [[ $current_epoch -lt $now_epoch ]]; then
-    current_epoch=$now_epoch
-  fi
+
+USERNAME="$1"
+DAYS="$2"
+
+# Cek apakah user ada di sistem
+if ! id "$USERNAME" &>/dev/null; then
+    echo "❌ User $USERNAME tidak ditemukan!"
+    exit 1
 fi
-# Hitung masa aktif baru
-days_seconds=$((hari * 86400))
-new_exp_epoch=$((current_epoch + days_seconds))
-new_exp_date=$(date -d "@$new_exp_epoch" +"%d %b %Y")
-# Set masa aktif baru
-usermod -e "$(date -d "@$new_exp_epoch" +%Y-%m-%d)" "$username"
-# Tampilkan notifikasi
-echo -e "✅   Perpanjangan akun SSH berhasil:"
-echo -e "Username   : $username"
-echo -e "Durasi     : $hari hari"
-echo -e "Expired    : $new_exp_date"
+
+# Hitung tanggal kedaluwarsa baru
+EXPIRE_DATE=$(date -d "+$DAYS days" +"%Y-%m-%d")
+
+# Set ulang tanggal kedaluwarsa user
+usermod -e "$EXPIRE_DATE" "$USERNAME"
+
+# Pastikan user tidak terkunci
+passwd -u "$USERNAME"
+
+echo "✅ Akun *$USERNAME* diperpanjang selama *$DAYS* hari."
+echo "📅 Expire date baru: $EXPIRE_DATE"
