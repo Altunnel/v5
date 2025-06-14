@@ -15,7 +15,7 @@ con() {
 }
 
 # Baca user VMess dari config.json
-mapfile -t users < <(grep -F '#!' /etc/xray/config.json | awk '{print $2}' | sort -u)
+mapfile -t users < <(grep -F '###' /etc/xray/config.json | awk '{print $2}' | sort -u)
 
 # Header
 echo -e ""
@@ -23,12 +23,12 @@ echo -e "───────────────────────�
 echo -e "   Agung Tunneling"
 echo -e "──────────────────────────"
 echo -e ""
-echo -e"──────────────────────────"
-echo -e"  TROJAN USER LOGIN"
-echo -e"──────────────────────────"
+echo -e "──────────────────────────"
+echo -e " VMESS USER LOGIN"
+echo -e "──────────────────────────"
 printf "%-15s %-20s %-15s %-15s %-10s\n" \
     "USER" "USAGE" "TOTAL" "LOG"
-echo -e"──────────────────────────"
+echo -e "──────────────────────────"
 
 # Loop user aktif
 for user in "${users[@]}"; do
@@ -43,7 +43,46 @@ for user in "${users[@]}"; do
     count=${#ip_list[@]}
     [ "$count" -eq 0 ] && continue
 
-    iplimit_file="/etc/kyt/limit/trojan/ip/$user"
+    iplimit_file="/etc/kyt/limit/vmess/ip/$user"
+    iplimit=$([ -f "$iplimit_file" ] && cat "$iplimit_file" || echo "-")
+
+    limit_file="/etc/vmess/$user"
+    limit_bytes=$([ -f "$limit_file" ] && cat "$limit_file" || echo "0")
+    limit_quota=$(con "$limit_bytes")
+
+    usage_file="/etc/limit/vmess/$user"
+    usage_bytes=$([ -f "$usage_file" ] && cat "$usage_file" || echo "0")
+    usage_quota=$(con "$usage_bytes")
+
+    printf "%-15s %-20s %-15s %-15s %-10s\n" \
+        "$user" "$usage_quota" "$count IP"
+done
+
+# Baca user VMess dari config.json
+mapfile -t users < <(grep -F '#&' /etc/xray/config.json | awk '{print $2}' | sort -u)
+
+# Header
+echo -e "──────────────────────────"
+echo -e "  VLESS USER LOGIN"
+echo -e "──────────────────────────"
+printf "%-15s %-20s %-15s %-15s %-10s\n" \
+    "USER" "USAGE" "TOTAL" "LOG"
+echo -e "──────────────────────────"
+
+# Loop user aktif
+for user in "${users[@]}"; do
+    [ -z "$user" ] && continue
+
+    mapfile -t ip_list < <(
+        grep -F -w "$user" /var/log/xray/access.log | tail -n500 \
+            | awk '{print $3}' \
+            | sed 's|tcp://||g; s|:.*||g' \
+            | sort -u | grep -v "^$"
+    )
+    count=${#ip_list[@]}
+    [ "$count" -eq 0 ] && continue
+
+    iplimit_file="/etc/kyt/limit/vless/ip/$user"
     iplimit=$([ -f "$iplimit_file" ] && cat "$iplimit_file" || echo "-")
 
     limit_file="/etc/vmess/$user"
@@ -64,4 +103,3 @@ echo -e "───────────────────────�
 echo -e "     Terimakasih sudah menggunakan-     "
 echo -e "        Script Credit by Agung"
 echo -e "──────────────────────────"
-echo -e ""
