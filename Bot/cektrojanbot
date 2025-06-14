@@ -20,11 +20,11 @@ mapfile -t users < <(grep -F '#!' /etc/xray/config.json | awk '{print $2}' | sor
 # Header
 echo -e ""
 echo -e "──────────────────────────"
-echo -e "   Agung Tunneling"
+echo -e "           Agung Tunneling"
 echo -e "──────────────────────────"
 echo -e ""
 echo -e "──────────────────────────"
-echo -e "  TROJAN USER LOGIN"
+echo -e "       TROJAN USER LOGIN"
 echo -e "──────────────────────────"
 printf "%-15s %-20s %-15s %-15s %-10s\n" \
     "USER" "USAGE" "TOTAL" "LOG"
@@ -62,6 +62,6 @@ done
 echo -e ""
 echo -e "──────────────────────────"
 echo -e "     Terimakasih sudah menggunakan-     "
-echo -e "        Script Credit by Agung"
+echo -e "            Script Credit by Agung"
 echo -e "──────────────────────────"
 echo -e ""
