@@ -23,12 +23,12 @@ echo -e "───────────────────────�
 echo -e "   Agung Tunneling"
 echo -e "──────────────────────────"
 echo -e ""
-echo -e"──────────────────────────"
-echo -e"  TROJAN USER LOGIN"
-echo -e"──────────────────────────"
+echo -e "──────────────────────────"
+echo -e "  TROJAN USER LOGIN"
+echo -e "──────────────────────────"
 printf "%-15s %-20s %-15s %-15s %-10s\n" \
     "USER" "USAGE" "TOTAL" "LOG"
-echo -e"──────────────────────────"
+echo -e "──────────────────────────"
 
 # Loop user aktif
 for user in "${users[@]}"; do
@@ -46,11 +46,11 @@ for user in "${users[@]}"; do
     iplimit_file="/etc/kyt/limit/trojan/ip/$user"
     iplimit=$([ -f "$iplimit_file" ] && cat "$iplimit_file" || echo "-")
 
-    limit_file="/etc/vmess/$user"
+    limit_file="/etc/trojan/$user"
     limit_bytes=$([ -f "$limit_file" ] && cat "$limit_file" || echo "0")
     limit_quota=$(con "$limit_bytes")
 
-    usage_file="/etc/limit/vmess/$user"
+    usage_file="/etc/limit/trojan/$user"
     usage_bytes=$([ -f "$usage_file" ] && cat "$usage_file" || echo "0")
     usage_quota=$(con "$usage_bytes")
 
