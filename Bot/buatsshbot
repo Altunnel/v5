@@ -40,7 +40,7 @@ mkdir -p /etc/kyt/limit/ssh/ip/
 echo "$IP_LIMIT" > /etc/kyt/limit/ssh/ip/$USERNAME
 
 # **Buat akun SSH**
-EXPIRY_DATE=$(date -d "$DAYS days" +"%d %b %Y")
+EXPIRY_DATE=$(date -d "$DAYS days" +"%Y-%m-%d")
 useradd -e "$EXPIRY_DATE" -s /bin/false -M "$USERNAME"
 echo -e "$PASSWORD\n$PASSWORD" | passwd "$USERNAME" &> /dev/null
 
