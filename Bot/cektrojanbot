@@ -55,7 +55,7 @@ for user in "${users[@]}"; do
     usage_quota=$(con "$usage_bytes")
 
     printf "%-15s %-20s %-15s %-15s %-10s\n" \
-        "$user" "$usage_quota" "$count IP"
+        "$user" "$usage_quota" "$count IP" "$RANDOM"
 done
 
 # Footer
