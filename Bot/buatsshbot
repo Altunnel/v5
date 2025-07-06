@@ -1,128 +1,63 @@
 #!/bin/bash
-export TERM=xterm
-DF='\e[39m'
-Bold='\e[1m'
-yell='\e[33m'
-red='\e[31m'
-green='\e[32m'
-NC='\e[0m'
 
-# **Ambil Input dari Argumen**
 USERNAME=$1
 PASSWORD=$2
 DAYS=$3
 
-# **Cek Input**
 if [ -z "$USERNAME" ] || [ -z "$PASSWORD" ] || [ -z "$DAYS" ]; then
-    echo -e "${red}⚠️ Penggunaan: $0 <username> <password> <durasi_hari>${NC}"
+    echo "⚠️ Penggunaan: $0 <username> <password> <durasi_hari>"
     exit 1
 fi
 
-# **Ambil informasi sistem**
 DOMAIN=$(cat /etc/xray/domain)
-if [[ ! -f /root/.isp ]]; then
-curl -sS ipinfo.io/org?token=7a814b6263b02c > /root/.isp
-fi
-if [[ ! -f /root/.city ]]; then
-curl -sS ipinfo.io/city?token=7a814b6263b02c > /root/.city
-fi
-if [[ ! -f /root/.myip ]]; then
-curl -sS ipv4.icanhazip.com > /root/.myip
-fi
+[ ! -f /root/.myip ] && curl -sS ipv4.icanhazip.com > /root/.myip
+IP=$(cat /root/.myip)
 
-export IP=$(cat /root/.myip);
-export ISP=$(cat /root/.isp);
-export CITY=$(cat /root/.city);
-
-# **Set batasan IP**
 IP_LIMIT="3"
 mkdir -p /etc/kyt/limit/ssh/ip/
 echo "$IP_LIMIT" > /etc/kyt/limit/ssh/ip/$USERNAME
 
-# **Buat akun SSH**
 EXPIRY_DATE=$(date -d "$DAYS days" +"%Y-%m-%d")
 useradd -e "$EXPIRY_DATE" -s /bin/false -M "$USERNAME"
 echo -e "$PASSWORD\n$PASSWORD" | passwd "$USERNAME" &> /dev/null
 
-# **Simpan ke database**
 echo "### $USERNAME $PASSWORD $EXPIRY_DATE" >> /etc/.ssh.db
 
-# **Tampilkan informasi akun**
+# Output WhatsApp Friendly
 echo ""
-echo -e "──────────────────────────"
-echo -e "              SSH/Dropbear    "
-echo -e "──────────────────────────"
-echo -e " HOST             : $DOMAIN"
-#echo -e " Nameserver       : ${NS}"
-echo -e " Username         : $USERNAME"
-echo -e " Password         : $PASSWORD"
-#echo -e " PUB Key         : ${PUB}"
-#echo -e "Limit Quota      : $Quota GB"
-#echo -e "Limit Ip         : ${iplimit} User"
-#echo -e "Location         : $CITY"
-#echo -e "ISP              : $ISP"
-echo -e "──────────────────────────"
-echo -e " SSH Websocket NoSSL"
-echo -e "  Port : 80,7788,2082,8080"
-echo -e "         8880,2052,2086,2095"
-echo -e " SSH Websocket SSL"
-echo -e "  Port : 443,8443,2053,2083"
-echo -e "         2087,2096"
-echo -e "──────────────────────────"
-echo -e " OpenSSH          : 80,2222,4444"
-echo -e " SSH UDP          : 1-65535"
-echo -e " OHP + SSH        : 9080"
-echo -e " Proxy            : 3128"
-echo -e " BadVPN UDPGW     : 7100-7600"
-echo -e " OpenVPN TCP      : 80,1194"
-echo -e " OpenVPN SSL      : 443"
-echo -e " OpenVPN UDP      : 25000"
-echo -e " OpenVPN DNS      : 53"
-echo -e " OHP + OVPN       : 9088"
-echo -e "──────────────────────────"
-echo -e " Payload SSH CDN Port 80"
-echo -e ""
-echo -e "GET / HTTP/1.1"
-echo -e "Host: [host_port]"
-echo -e "User-Agent: [ua]"
-echo -e "Upgrade: websocket[crlf][crlf]"
-echo -e "──────────────────────────"
-echo -e " Payload SSH TLS/WSS Port 443"
-echo -e ""
-echo -e "GET wss://BUG/ HTTP/1.1"
-echo -e "Host: [host]"
-echo -e "User-Agent: [ua]"
-echo -e "Upgrade: [crlf][crlf]"
-echo -e "──────────────────────────"
-echo -e " Payload SSH WS Non TLS Port 7788 "
-echo -e " Path - /whatever "
-echo -e ""
-echo -e "GET wss://BUG/worryfree HTTP/1.1 "
-echo -e "Host: [host] "
-echo -e "User-Agent: [ua] "
-echo -e "Upgrade: [crlf][crlf] "
-echo -e "──────────────────────────"
-echo -e " Payload Payload OHP + SSH Port 9080 "
-echo -e " Path - /whatever "
-echo -e ""
-echo -e "GET https://BUG HTTP/1.1 "
-echo -e "Host: [host] "
-echo -e "User-Agent: [ua][crlf][crlf] "
-echo -e "──────────────────────────"
-echo -e "                 OpenVPN "
-echo -e "──────────────────────────"
-echo -e " https://$DOMAIN:81/all-ovpn.zip"
-echo -e "──────────────────────────"
-#echo -e "Aktif Selama     : $masaaktif Hari"
-#echo -e "Dibuat Pada      : $tnggl"
-echo -e "      Expired    : $EXPIRY_DATE"
-echo -e "──────────────────────────"
-echo -e ""
-echo -e "──────────────────────────"
-echo -e "     Terimakasih sudah menggunakan-"
-echo -e "        Script Credit by Agung"
-echo -e "──────────────────────────"
-echo -e ""
+echo "*━━━━━━━━━━━━━━━━━━━━━━*"
+echo "*    SSH / Dropbear    *"
+echo "*━━━━━━━━━━━━━━━━━━━━━━*"
+echo "*Host:* $DOMAIN"
+echo "*Username:* $USERNAME"
+echo "*Password:* $PASSWORD"
+echo "*Expired:* $EXPIRY_DATE"
+echo ""
+echo "*📡 SSH WebSocket (No SSL):*"
+echo "80, 2082, 8080, 8880, 2095"
+echo "*🔒 SSH WebSocket (SSL):*"
+echo "443, 8443, 2053, 2083"
+echo "*📦 OpenSSH Ports:*"
+echo "80, 2222, 4444"
+echo "*🛡️ UDP Ports:*"
+echo "1-65535"
+echo ""
+echo "*📥 OpenVPN Config:*"
+echo "https://$DOMAIN:81/all-ovpn.zip"
+echo ""
+echo "*📜 Payload WebSocket Port 80:*"
+echo "GET / HTTP/1.1"
+echo "Host: [host_port]"
+echo "Upgrade: websocket"
+echo ""
+echo "*📜 Payload WebSocket TLS Port 443:*"
+echo "GET wss://BUG/ HTTP/1.1"
+echo "Host: [host]"
+echo "Upgrade: websocket"
+echo ""
+echo "*✅ Akun aktif selama $DAYS hari*"
+echo "*Terima kasih telah menggunakan script ini!*"
+echo "*━━━━━━━━━━━━━━━━━━━━━━*"
 
-# **Hapus akun setelah durasi habis**
+# Hapus otomatis saat expired
 echo "userdel -f \"$USERNAME\"" | at now + "$DAYS" days &> /dev/null
