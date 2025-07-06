@@ -23,7 +23,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo "🔷 *VMESS Active Users*"
 echo "━━━━━━━━━━━━━━━━━━━━━━━"
-printf "👤 %-13s 📶 %-10s 🌐 %-10s 💡 %s\n" "User" "Usage" "IP Aktif" "Limit"
+printf "👤 %-13s 📶 %-10s 🌐 %-10s\n" "User" "Usage" "IP Aktif"
 echo "──────────────────────────────────────────────"
 
 mapfile -t users < <(grep -F '###' /etc/xray/config.json | awk '{print $2}' | sort -u)
@@ -50,15 +50,15 @@ for user in "${users[@]}"; do
     usage_file="/etc/limit/vmess/$user"
     usage_quota=$(con $([ -f "$usage_file" ] && cat "$usage_file" || echo "0"))
 
-    printf "👤 %-13s 📶 %-10s 🌐 %-10s 💡 %s\n" \
-        "$user" "$usage_quota" "$count IP" "$limit_quota"
+    printf "👤 %-13s 📶 %-10s 🌐 %-10s\n" \
+        "$user" "$usage_quota" "$count IP"
 done
 
 # 🔶 VLESS Section
 echo ""
 echo "🔶 *VLESS Active Users*"
 echo "━━━━━━━━━━━━━━━━━━━━━━━"
-printf "👤 %-13s 📶 %-10s 🌐 %-10s 💡 %s\n" "User" "Usage" "IP Aktif" "Limit"
+printf "👤 %-13s 📶 %-10s 🌐 %-10s\n" "User" "Usage" "IP Aktif"
 echo "──────────────────────────────────────────────"
 
 mapfile -t users < <(grep -F '#&' /etc/xray/config.json | awk '{print $2}' | sort -u)
@@ -85,8 +85,8 @@ for user in "${users[@]}"; do
     usage_file="/etc/limit/vless/$user"
     usage_quota=$(con $([ -f "$usage_file" ] && cat "$usage_file" || echo "0"))
 
-    printf "👤 %-13s 📶 %-10s 🌐 %-10s 💡 %s\n" \
-        "$user" "$usage_quota" "$count IP" "$limit_quota"
+    printf "👤 %-13s 📶 %-10s 🌐 %-10s\n" \
+        "$user" "$usage_quota" "$count IP"
 done
 
 # Footer
