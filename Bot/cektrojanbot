@@ -22,7 +22,7 @@ echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "🌀 *Agung Tunneling — Trojan Stats*"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-printf "👤 %-13s 📶 %-10s 🌐 %-10s 💡 %s\n" "User" "Usage" "IP Aktif" "Limit"
+printf "👤 %-13s 📶 %-10s 🌐 %-10s\n" "User" "Usage" "IP Aktif"
 echo "──────────────────────────────────────────────"
 
 # Loop setiap user
@@ -54,8 +54,8 @@ for user in "${users[@]}"; do
     limit_bytes=$([ -f "$limit_file" ] && cat "$limit_file" || echo "0")
     limit_quota=$(con "$limit_bytes")
 
-    printf "👤 %-13s 📶 %-10s 🌐 %-10s 💡 %s\n" \
-        "$user" "$usage_quota" "$ip_count IP" "$limit_quota"
+    printf "👤 %-13s 📶 %-10s 🌐 %-10s\n" \
+        "$user" "$usage_quota" "$ip_count IP"
 done
 
 # Footer
