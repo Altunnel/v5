@@ -5,7 +5,7 @@ touch /root/.system
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "📊  *SSH/Dropbear Active Users*"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-printf "👤 %-15s 📥 %-5s 🔐 %s\n" "Username" "Login" "Keterangan"
+printf "👤 %-15s 📥 %-5s\n" "Username" "Login"
 echo "────────────────────────────────"
 
 # Ambil data login aktif (dari fungsi cekssh bawaan)
@@ -26,7 +26,7 @@ do
 
         iplimit=$(cat "$limit_file")
 
-        printf "👤 %-15s 🔄 %-5s 🎯 Limit: %s\n" "$user" "$aktif" "$iplimit"
+        printf "👤 %-15s 🔄 %-5s: %s\n" "$user" "$aktif"
         echo "slot" >> /root/.system
     fi
 
