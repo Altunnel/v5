@@ -1,35 +1,40 @@
 #!/bin/bash
 export TERM=xterm
 touch /root/.system
-echo "──────────────────────────"
-echo "            SSH/Dropbear User Login"
-echo "──────────────────────────"
-echo "    USERNAME      TOTAL"
 
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "📊  *SSH/Dropbear Active Users*"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+printf "👤 %-15s 📥 %-5s 🔐 %s\n" "Username" "Login" "Keterangan"
+echo "────────────────────────────────"
+
+# Ambil data login aktif (dari fungsi cekssh bawaan)
 mulog=$(cekssh)
-data=( $(cat /etc/passwd | grep home | cut -d ' ' -f 1 | cut -d : -f 1) )
+
+# Ambil daftar user dari /etc/passwd yang punya home dir
+data=( $(awk -F: '$6 ~ /\/home/ {print $1}' /etc/passwd) )
 
 for user in "${data[@]}"
 do
-    cekcek=$(echo "$mulog" | grep "$user" | wc -l)
-    if [[ $cekcek -gt 0 ]]; then
+    aktif=$(echo "$mulog" | grep -w "$user" | wc -l)
+
+    if [[ $aktif -gt 0 ]]; then
         limit_file="/etc/kyt/limit/ssh/ip/$user"
 
-        # Cek apakah file limit ada, jika tidak buat otomatis dengan isi default "1"
-        if [[ ! -f "$limit_file" ]]; then
-            echo "1" > "$limit_file"
-        fi
+        # Jika file limit tidak ada, isi default 1
+        [[ ! -f "$limit_file" ]] && echo "1" > "$limit_file"
 
         iplimit=$(cat "$limit_file")
-        printf "  %-13s %-7s %-8s %2s\n" "     $user         $cekcek PID"
+
+        printf "👤 %-15s 🔄 %-5s 🎯 Limit: %s\n" "$user" "$aktif" "$iplimit"
         echo "slot" >> /root/.system
     fi
+
     sleep 0.1
 done
 
-echo -e ""
-echo -e "──────────────────────────"
-echo -e "     Terimakasih sudah menggunakan-"
-echo -e "        Script Credit by Agung"
-echo -e "──────────────────────────"
-echo -e ""
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🙏 Terima kasih telah menggunakan script ini"
+echo "🔧 Script by AgungStore"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
