@@ -6,7 +6,7 @@ DROPBEAR_RECEIVE_WINDOW=65536
 
 # Any additional arguments for Dropbear.  For instead set
 #
-DROPBEAR_EXTRA_ARGS="-b /etc/issue.net -p 109 -I 60"
+DROPBEAR_EXTRA_ARGS="-b /etc/issue.net -p 90 -p 69 -I 60"
 #
 # to specify an optional banner file containing a message to be sent to
 DROPBEAR_BANNER="/etc/issue.net"
